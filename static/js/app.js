@@ -133,13 +133,19 @@ class UniConnect {
             postedTime = `<p class="event-location">Posted on ${event.posted_time}</p><br/>`;
         }
 
+        // Create click handler for the entire event
+        const eventClickHandler = (e) => {
+            e.preventDefault();
+            this.showEventDetails(eventName);
+        };
+
         if (eventImage) {
             div.innerHTML = `
-                <div class="flex">
+                <div class="flex" style="cursor: pointer;">
                     <img class="event-img" src="${eventImage}" alt="${eventName}">
                     <div class="event-text grid">
                         <strong class="event-name">
-                            <a href="#" onclick="app.showEventDetails('${eventName.replace(/'/g, "\\'")}')">${eventName}</a>
+                            <a href="#" class="event-link">${eventName}</a>
                         </strong>
                         <p>${eventCollege}</p>
                         ${eventLocation ? `<p class="event-location">${eventLocation}</p>` : ''}
@@ -151,15 +157,26 @@ class UniConnect {
             `;
         } else {
             div.innerHTML = `
-                <strong class="event-name">
-                    <a href="#" onclick="app.showEventDetails('${eventName.replace(/'/g, "\\'")}')">${eventName}</a>
-                </strong>
-                <p>${eventCollege}</p>
-                ${eventLocation ? `<p class="event-location">${eventLocation}</p>` : ''}
-                <p class="event-location">${eventDate}</p><br/>
-                ${postedTime}
-                <p>${eventDesc}</p>
+                <div style="cursor: pointer;">
+                    <strong class="event-name">
+                        <a href="#" class="event-link">${eventName}</a>
+                    </strong>
+                    <p>${eventCollege}</p>
+                    ${eventLocation ? `<p class="event-location">${eventLocation}</p>` : ''}
+                    <p class="event-location">${eventDate}</p><br/>
+                    ${postedTime}
+                    <p>${eventDesc}</p>
+                </div>
             `;
+        }
+
+        // Add click event listener to the entire div
+        div.addEventListener('click', eventClickHandler);
+        
+        // Also add click handler to the link specifically
+        const link = div.querySelector('.event-link');
+        if (link) {
+            link.addEventListener('click', eventClickHandler);
         }
 
         return div;
@@ -177,6 +194,17 @@ class UniConnect {
     createEventModal(event) {
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100vw';
+        modal.style.height = '100vh';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        modal.style.display = 'flex';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.zIndex = '1000';
+        
         modal.onclick = (e) => {
             if (e.target === modal) {
                 document.body.removeChild(modal);
@@ -185,42 +213,62 @@ class UniConnect {
 
         const content = document.createElement('div');
         content.className = 'bg-white p-6 rounded-lg max-w-4xl max-h-[90vh] overflow-y-auto m-4';
+        content.style.backgroundColor = 'white';
+        content.style.padding = '2rem';
+        content.style.borderRadius = '0.5rem';
+        content.style.maxWidth = '56rem';
+        content.style.maxHeight = '90vh';
+        content.style.overflowY = 'auto';
+        content.style.margin = '1rem';
+        content.style.position = 'relative';
 
         let postedTime = '';
         if (event.posted_time && event.posted_time !== 0) {
             postedTime = `<p class="event-location">Posted on ${event.posted_time}</p><br/>`;
         }
 
-        content.innerHTML = `
-            <button onclick="document.body.removeChild(this.closest('.fixed'))" 
-                    class="float-right text-2xl font-bold">&times;</button>
-            
-            ${event.image ? `
-                <div class="ind-content flex mb-4">
-                    <img class="ind-event-img max-w-md" src="${event.image}" alt="${event.name}">
-                    <div class="ind-event-text grid ml-6">
-                        <strong class="event-name text-xl mb-2">${event.name}</strong>
-                        <p class="mb-1">${Array.isArray(event.sorting_info) ? event.sorting_info[2] : ''}</p>
-                        ${event.location ? `<p class="event-location mb-1">${event.location}</p>` : ''}
-                        <p class="event-location mb-2">${Array.isArray(event.sorting_info) ? event.sorting_info[0] : ''}</p>
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '&times;';
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '10px';
+        closeBtn.style.right = '15px';
+        closeBtn.style.background = 'none';
+        closeBtn.style.border = 'none';
+        closeBtn.style.fontSize = '2rem';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.color = '#666';
+        closeBtn.onclick = () => document.body.removeChild(modal);
+
+        if (event.image) {
+            content.innerHTML = `
+                <div class="ind-content flex mb-4" style="display: flex; margin-bottom: 1rem;">
+                    <img class="ind-event-img" src="${event.image}" alt="${event.name}" style="max-width: 20rem; margin-right: 1.5rem;">
+                    <div class="ind-event-text" style="flex: 1;">
+                        <strong class="event-name" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;">${event.name}</strong>
+                        <p style="margin-bottom: 0.25rem;"><strong>${Array.isArray(event.sorting_info) ? event.sorting_info[2] : ''}</strong></p>
+                        ${event.location ? `<p class="event-location" style="margin-bottom: 0.25rem; color: #666;"><strong>Location:</strong> ${event.location}</p>` : ''}
+                        <p class="event-location" style="margin-bottom: 0.5rem; color: #666;"><strong>Date:</strong> ${Array.isArray(event.sorting_info) ? event.sorting_info[0] : ''}</p>
                         ${postedTime}
                     </div>
                 </div>
-                <p class="ind-event-desc leading-relaxed">${event.desc || ''}</p>
-            ` : `
+                <div class="ind-event-desc" style="line-height: 1.6; margin-top: 1rem;">${event.desc || ''}</div>
+            `;
+        } else {
+            content.innerHTML = `
                 <div class="ind-content">
                     <div class="no-img-content">
-                        <strong class="event-name text-xl mb-2 block">${event.name}</strong>
-                        <p class="mb-1">${Array.isArray(event.sorting_info) ? event.sorting_info[2] : ''}</p>
-                        ${event.location ? `<p class="event-location mb-1">${event.location}</p>` : ''}
-                        <p class="event-location mb-2">${Array.isArray(event.sorting_info) ? event.sorting_info[0] : ''}</p>
+                        <strong class="event-name" style="font-size: 1.5rem; display: block; margin-bottom: 1rem;">${event.name}</strong>
+                        <p style="margin-bottom: 0.25rem;"><strong>${Array.isArray(event.sorting_info) ? event.sorting_info[2] : ''}</strong></p>
+                        ${event.location ? `<p class="event-location" style="margin-bottom: 0.25rem; color: #666;"><strong>Location:</strong> ${event.location}</p>` : ''}
+                        <p class="event-location" style="margin-bottom: 0.5rem; color: #666;"><strong>Date:</strong> ${Array.isArray(event.sorting_info) ? event.sorting_info[0] : ''}</p>
                         ${postedTime}
-                        <p class="event-short-desc leading-relaxed">${event.desc || ''}</p>
+                        <div class="event-short-desc" style="line-height: 1.6; margin-top: 1rem;">${event.desc || ''}</div>
                     </div>
                 </div>
-            `}
-        `;
+            `;
+        }
 
+        content.appendChild(closeBtn);
         modal.appendChild(content);
         return modal;
     }
