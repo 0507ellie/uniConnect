@@ -12,6 +12,16 @@ UofT colleges promote events across flyers, emails, and scattered Instagram acco
 
 ---
 
+## Overview
+1. The launch page of the program, displays all events, with brief descriptions, the side bar controls the filtering system.
+   ![overview](uniConnect/imgs/overview.png)
+3. The header includes a search bar and a sort menu, clicking on the user icon pops up the user information form.
+   ![elements](uniConnect/imgs/elements.png)
+5. Specific event page, with its full image and descriptions
+   ![event pages](uniConnect/imgs/event_pge.png)
+
+---
+
 ## 📊 Dataset
 
 **Source:** Event pages from 6 UofT college websites:
@@ -75,7 +85,7 @@ python scrapper.py
 ```bash
 python main.py
 ```
-Open browser at:
+4. Open browser at:
 ```arduino
 http://localhost:5000
 ```
