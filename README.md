@@ -42,3 +42,40 @@ Events are stored in a **tree** for efficient filtering and recommendation:
 - **Filtering**: Traverse tree nodes to match filters
 - **Sorting**: Radix sort based on UNIX timestamps
 - **Recommendation**: Score events based on user preferences
+
+---
+
+## 🌐 Web App (Flask)
+
+Built with **Flask**, **HTML/CSS/JS**, **Jinja2**
+
+### Features:
+- Browse all college events
+- Filter by day, category, and college
+- Submit personal preferences (college, faculty, categories)
+- Get personalized recommendations
+- View event detail pages
+- Dynamic event updates (AJAX)
+
+---
+
+## 🚀 How to Run
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Run scraper to fetch latest data:
+```bash
+python scrapper.py
+```
+
+3. Start the Flask app:
+```bash
+python main.py
+```
+Open browser at:
+```arduino
+http://localhost:5000
+```
